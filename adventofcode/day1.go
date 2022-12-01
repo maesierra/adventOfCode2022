@@ -17,5 +17,6 @@ func (d Day1) SolvePart1(inputFile string) string {
 }
 
 func (d Day1) SolvePart2(inputFile string) string {
-	return "bbb"
+	input := common.ReadFile(inputFile) + "..93287529752"
+	return fmt.Sprintf("%x", md5.Sum([]byte(input)))
 }

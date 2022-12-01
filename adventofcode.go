@@ -7,11 +7,6 @@ import (
 	"maesierra.net/advent-of-code/2022/adventofcode"
 )
 
-type Solver interface {
-	SolvePart1(inputFile string) string
-	SolvePart2(inputFile string) string
-}
-
 func main() {
 	args := os.Args[1:]
 	if len(args) < 2 {
@@ -20,7 +15,7 @@ func main() {
 	}
 	day := os.Args[1]
 	part := os.Args[2]
-	var solver Solver
+	var solver adventofcode.Solver
 	switch day {
 	case "1":
 		solver = adventofcode.Day1{}
