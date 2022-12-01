@@ -14,7 +14,7 @@ func ReadFile(path string) string {
 func CreateTempFile(contents string) *os.File {
 	file, error := ioutil.TempFile(os.TempDir(), "sample")
 	PanicIfError(error)
-	defer os.Remove(file.Name())
+	//defer os.Remove(file.Name())
 	_, error = file.WriteString(contents)
 	PanicIfError(error)
 	return file
