@@ -1,12 +1,13 @@
-package adventofcode_test
+package day1_test
 
 import (
 	"testing"
 
 	"maesierra.net/advent-of-code/2022/adventofcode"
+	"maesierra.net/advent-of-code/2022/adventofcode/day1"
 )
 
-var solver adventofcode.Solver = adventofcode.Day1{}
+var solver adventofcode.Solver = day1.Day1{}
 
 func Test_SolvePart1(t *testing.T) {
 	input := `1000
