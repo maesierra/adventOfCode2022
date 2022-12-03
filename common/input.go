@@ -3,6 +3,7 @@ package common
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func ReadFile(path string) string {
@@ -24,4 +25,29 @@ func PanicIfError(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func ReadFileIntoLines(path string) []string {
+	return strings.Split(ReadFile(path), "\n")
+}
+
+func ReadFileIntoChuncks(path string, chunckSize int) [][]string {
+	return ChunkSlice(ReadFileIntoLines(path), chunckSize)
+}
+
+func ChunkSlice(slice []string, chunkSize int) [][]string {
+	var chunks [][]string
+	for i := 0; i < len(slice); i += chunkSize {
+		end := i + chunkSize
+
+		// necessary check to avoid slicing beyond
+		// slice capacity
+		if end > len(slice) {
+			end = len(slice)
+		}
+
+		chunks = append(chunks, slice[i:end])
+	}
+
+	return chunks
 }
