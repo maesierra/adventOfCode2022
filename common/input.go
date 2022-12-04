@@ -3,6 +3,7 @@ package common
 import (
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -50,4 +51,10 @@ func ChunkSlice(slice []string, chunkSize int) [][]string {
 	}
 
 	return chunks
+}
+
+func ParseInt(s string) int {
+	intVal, err := strconv.Atoi(s)
+	PanicIfError(err)
+	return intVal
 }
