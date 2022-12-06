@@ -21,7 +21,7 @@ func SolvePart1Test(input string, expectedOutput string, s Solver, t *testing.T)
 func SolvePart2Test(input string, expectedOutput string, s Solver, t *testing.T) {
 	got := s.SolvePart2(StringToInputFile(input))
 	if got != expectedOutput {
-		t.Errorf("Part1() = %q, want %q", got, expectedOutput)
+		t.Errorf("Part2() = %q, want %q", got, expectedOutput)
 	}
 
 }
