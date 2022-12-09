@@ -12,6 +12,7 @@ import (
 	"maesierra.net/advent-of-code/2022/adventofcode/day5"
 	"maesierra.net/advent-of-code/2022/adventofcode/day6"
 	"maesierra.net/advent-of-code/2022/adventofcode/day7"
+	"maesierra.net/advent-of-code/2022/adventofcode/day8"
 )
 
 func main() {
@@ -39,6 +40,8 @@ func main() {
 		solver = day6.Day6{}		
 	case "7":
 		solver = day7.Day7{}		
+	case "8":
+		solver = day8.Day8{}		
 	default:
 		solver = nil
 	}
