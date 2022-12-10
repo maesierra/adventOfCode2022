@@ -15,13 +15,13 @@ type Day5 struct {
 
 
 type CrateMover struct {
-	crates map[string]common.Stack
+	crates map[string]common.Stack[string]
 	labels [] string
 	blockMove bool
 }
 
 func (c *CrateMover) AddStack(label string) {
-	c.crates[label] = common.NewStack(0)
+	c.crates[label] = common.Stack[string]{}
 	c.labels = append(c.labels, label)
 }
 
@@ -58,7 +58,7 @@ func (c CrateMover) Count() int {
 	return count
 }
 
-func (c CrateMover) Get(label string) common.Stack {
+func (c CrateMover) Get(label string) common.Stack[string] {
 	return c.crates[label]
 }
 
@@ -79,7 +79,7 @@ type Movement struct {
 func (d Day5) parse(inputFile string, version string) (CrateMover, []Movement) {
 	input := strings.Split(common.ReadFile(inputFile), "\n")
 	crateMover := CrateMover{
-		make(map[string]common.Stack),
+		make(map[string]common.Stack[string]),
 		make([]string, 0),
 		version == "9001",
 	}	
