@@ -32,6 +32,10 @@ func ReadFileIntoLines(path string) []string {
 	return strings.Split(ReadFile(path), "\n")
 }
 
+func ReadFileIntoLBlocks(path, separator string) []string {
+	return strings.Split(ReadFile(path), separator)
+}
+
 func ReadFileIntoChuncks(path string, chunckSize int) [][]string {
 	return ChunkSlice(ReadFileIntoLines(path), chunckSize)
 }
