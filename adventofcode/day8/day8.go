@@ -12,7 +12,7 @@ import (
 type Day8 struct {
 }
 
-func (d Day8) SolvePart1(inputFile string) string {
+func (d Day8) SolvePart1(inputFile string, data []string) string {
 
 	treeMap := intmatrix.ReadFileIntoMatrix(inputFile)
 	
@@ -49,7 +49,7 @@ func (d Day8) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day8) SolvePart2(inputFile string) string {
+func (d Day8) SolvePart2(inputFile string, data []string) string {
 	treeMap := intmatrix.ReadFileIntoMatrix(inputFile)
 	
 	rows, columns := treeMap.RawMatrix().Rows, treeMap.RawMatrix().Cols

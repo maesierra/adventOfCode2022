@@ -125,13 +125,13 @@ func (d Day5) run(crateMover CrateMover, movements []Movement) string{
 	return crateMover.Labels()
 }
 
-func (d Day5) SolvePart1(inputFile string) string {
+func (d Day5) SolvePart1(inputFile string, data []string) string {
 	crateMover, movements := d.parse(inputFile, "9000")
 	return d.run(crateMover, movements)
 
 }
 
-func (d Day5) SolvePart2(inputFile string) string {
+func (d Day5) SolvePart2(inputFile string, data []string) string {
 	crateMover, movements := d.parse(inputFile, "9001")
 	return d.run(crateMover, movements)
 }

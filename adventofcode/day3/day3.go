@@ -19,7 +19,7 @@ func (Day3) calculatePriority(shared rune) int {
 }
 
 
-func (d Day3) SolvePart1(inputFile string) string {
+func (d Day3) SolvePart1(inputFile string, data []string) string {
 	input := common.ReadFileIntoLines(inputFile)
 	var sum int = 0
 	for _, rucksack := range input {
@@ -46,7 +46,7 @@ func (d Day3) SolvePart1(inputFile string) string {
 }
 
 
-func (d Day3) SolvePart2(inputFile string) string {
+func (d Day3) SolvePart2(inputFile string, data []string) string {
 	groups := common.ReadFileIntoChuncks(inputFile, 3)
 	var sum int = 0
 	for _, group := range groups {

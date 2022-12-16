@@ -16,110 +16,62 @@ var debug = false
 type Day14 struct {
 }
 
-type Line struct {
-	x1 int
-	y1 int 
-	x2 int 
-	y2 int
-}
-
-func (l Line) IsHorizontal() bool{
-	return l.y1 == l.y2
-}
-
-func (l Line) IsVertical() bool{
-	return l.x1 == l.x2
-}
-
-func (l Line) Draw() []Point {
-	points := []Point{}
-	direction := 1
-	if l.IsHorizontal() {		
-		if l.x2 < l.x1 {
-			direction = -1
-		}
-		for x := l.x1; x != l.x2; x+= direction {
-			points = append(points, Point{x, l.y1})	
-		}	
-		points = append(points, Point{l.x2, l.y2})	
-		return points
-	} else if l.IsVertical() {
-		if l.y2 < l.y1 {
-			direction = -1
-		}
-		for y := l.y1; y != l.y2; y+= direction {
-			points = append(points, Point{l.x1, y})	
-		}	
-		points = append(points, Point{l.x2, l.y2})	
-		return points
-	}
-	panic("line not straight")
-}
-
-type Point struct {
-	x int
-	y int
-}
-
-func (p Point) String() string {
-	return fmt.Sprintf("%d,%d", p.x, p.y)
-}
 
 type CavernMap struct {
 	m *mat.Dense 
 	minX int
 	maxY int
 	floor int	
-	startingPoint Point
+	startingPoint common.Point
 }
 
 func (c CavernMap) HasFloor() bool {
 	return c.floor != -1
 }
 
-func (c *CavernMap) AddWall(p Point) {
-	c.m.Set(p.y, p.x, 3)
-	c.minX = common.IntMin(c.minX, p.x)
-	c.maxY = common.IntMax(c.maxY, p.y)
+func (c *CavernMap) AddWall(p common.Point) {
+	c.m.Set(p.Y, p.X, 3)
+	c.minX = common.IntMin(c.minX, p.X)
+	c.maxY = common.IntMax(c.maxY, p.Y)
 }
 
 
-func (c CavernMap) IsSand(p Point) bool {
-	return c.m.At(p.y, p.x) == 2 
+func (c CavernMap) IsSand(p common.Point) bool {
+	return c.m.At(p.Y, p.X) == 2 
 }
 
-func (c CavernMap) IsBlocked(p Point) bool{
-	return c.m.At(p.y, p.x) != 0 
+func (c CavernMap) IsBlocked(p common.Point) bool{
+	return c.m.At(p.Y, p.X) != 0 
 }
 
-func (c * CavernMap) AddSand() *Point {
-	point := Point{c.startingPoint.x, c.startingPoint.y}
+func (c * CavernMap) AddSand() *common.Point {
+	point := common.Point{X: c.startingPoint.X, Y: c.startingPoint.Y}
 	for ;; {
-		if !c.HasFloor() && point.y > c.maxY {
+		if !c.HasFloor() && point.Y > c.maxY {
 			return nil //Falling into the abyss
-		} else if c.HasFloor() && c.floor == point.y {
-			c.m.Set(point.y - 1, point.x, 2)
-			c.minX = common.IntMin(c.minX, point.x)
-			return &Point{point.x, point.y - 1}
+		} else if c.HasFloor() && c.floor == point.Y {
+			c.m.Set(point.Y - 1, point.X, 2)
+			c.minX = common.IntMin(c.minX, point.X)
+			return &common.Point{X: point.X, Y: point.Y - 1}
 		}
 		if c.IsBlocked(point) {
-			if !c.IsBlocked(Point{point.x - 1, point.y}) {
-				point.x-- 
-				point.y++
-			} else if !c.IsBlocked(Point{point.x + 1, point.y}) {
-				point.x++ 
-				point.y++
+			if !c.IsBlocked(common.Point{X: point.X - 1, Y: point.Y}) {
+				point.X-- 
+				point.Y++
+			} else if !c.IsBlocked(common.Point{X: point.X + 1, Y: point.Y}) {
+				point.X++ 
+				point.Y++
 			} else {
-				c.m.Set(point.y - 1, point.x, 2)
-				c.minX = common.IntMin(c.minX, point.x)
-				return &Point{point.x, point.y - 1}
+				c.m.Set(point.Y - 1, point.X, 2)
+				c.minX = common.IntMin(c.minX, point.X)
+				return &common.Point{X: point.X, Y: point.Y - 1}
 			}
 		} else {
-			point.y++
+			point.Y++
 		}
-		if point.x == 0 {
+		if point.X == 0 {
 			panic("Negative x")
-		} else if point.x == c.m.RawMatrix().Cols - 1 {
+		} else if point.X == c.m.RawMatrix().Cols - 1 {
 			c.m = mat.DenseCopyOf(c.m.Grow(0, 20))
 		}
 	}
@@ -157,9 +109,9 @@ func (d Day14) ParseInput(inputFile string, hasFloor bool) CavernMap {
 	maxX := 0
 	maxY := 0
 	numbersRegExp, _ := regexp.Compile(`\d+`) 
-	lines := []Line{}
+	lines := []common.Line{}
 	for _, line := range input {
-		var last *Line = nil
+		var last *common.Line = nil
 		for _, l := range strings.Split(line, " -> ") {
 			m := numbersRegExp.FindAllStringSubmatch(l, -1)
 			x, _ := strconv.Atoi(m[0][0])
@@ -167,11 +119,11 @@ func (d Day14) ParseInput(inputFile string, hasFloor bool) CavernMap {
 			maxX = common.IntMax(maxX, x)
 			maxY = common.IntMax(maxY, y)
 			if last != nil {
-				last.x2 = x
-				last.y2 = y				
+				last.X2 = x
+				last.Y2 = y				
 				lines = append(lines, *last)
 			} 
-			newLine := Line{x, y, 0, 0}			
+			newLine := common.Line{X1: x, Y1: y, X2: 0, Y2: 0}			
 			last = &newLine
 		}
 	}
@@ -190,7 +142,7 @@ func (d Day14) ParseInput(inputFile string, hasFloor bool) CavernMap {
 		math.MaxInt,
 		0,
 		floor,
-		Point{500, 0},
+		common.Point{X: 500, Y: 0},
 	}
 	for _, line := range lines {
 		for _, point := range line.Draw() {
@@ -200,7 +152,7 @@ func (d Day14) ParseInput(inputFile string, hasFloor bool) CavernMap {
 	return cavernMap
 }
 
-func (d Day14) SolvePart1(inputFile string) string {
+func (d Day14) SolvePart1(inputFile string, data []string) string {
 	cavernMap :=  d.ParseInput(inputFile, false)
 	if debug {
 		fmt.Printf("%v\n", cavernMap)	
@@ -215,7 +167,7 @@ func (d Day14) SolvePart1(inputFile string) string {
 	return strconv.Itoa(nUnits - 1)
 }
 
-func (d Day14) SolvePart2(inputFile string) string {
+func (d Day14) SolvePart2(inputFile string, data []string) string {
 	cavernMap :=  d.ParseInput(inputFile, true)
 	if debug {
 		fmt.Printf("%v\n", cavernMap)	
@@ -225,7 +177,7 @@ func (d Day14) SolvePart2(inputFile string) string {
 		fmt.Printf("Units: %d\n", nUnits)
 		sand := cavernMap.AddSand()
 		fmt.Printf("Sand added at: %v\n", sand)
-		if (sand.x == cavernMap.startingPoint.x && sand.y == cavernMap.startingPoint.y) {
+		if (sand.X == cavernMap.startingPoint.X && sand.Y == cavernMap.startingPoint.Y) {
 			break;
 		}
 		if debug {

@@ -73,21 +73,21 @@ func (b *RopeBridge) MoveHead(mov Movement) {
 			b.headPosition.row--
 		}
 		if b.headPosition.column >= b.bridgeMap.RawMatrix().Cols {
-			b.bridgeMap = intmatrix.AddColumnToTheRight(b.bridgeMap)
-			b.visited = intmatrix.AddColumnToTheRight(b.visited)
+			b.bridgeMap = intmatrix.AddColumnToTheRight(1, b.bridgeMap)
+			b.visited = intmatrix.AddColumnToTheRight(1, b.visited)
 		} else if b.headPosition.row >= b.bridgeMap.RawMatrix().Rows {
-			b.bridgeMap = intmatrix.AddRowToTheBottom(b.bridgeMap)
-			b.visited = intmatrix.AddRowToTheBottom(b.visited)
+			b.bridgeMap = intmatrix.AddRowToTheBottom(1, b.bridgeMap)
+			b.visited = intmatrix.AddRowToTheBottom(1, b.visited)
 		} else if b.headPosition.row < 0 {
-			b.bridgeMap = intmatrix.AddRowToTheTop(b.bridgeMap)
-			b.visited = intmatrix.AddRowToTheTop(b.visited)
+			b.bridgeMap = intmatrix.AddRowToTheTop(1, b.bridgeMap)
+			b.visited = intmatrix.AddRowToTheTop(1, b.visited)
 			b.headPosition.row = 0
 			for idx := range b.sections {
 				b.sections[idx].row++
 			}
 		} else if b.headPosition.column < 0 {
-			b.bridgeMap = intmatrix.AddColumnToTheLeft(b.bridgeMap)
-			b.visited = intmatrix.AddColumnToTheLeft(b.visited)
+			b.bridgeMap = intmatrix.AddColumnToTheLeft(1, b.bridgeMap)
+			b.visited = intmatrix.AddColumnToTheLeft(1, b.visited)
 			b.headPosition.column = 0
 			for idx := range b.sections {
 				b.sections[idx].column++
@@ -131,7 +131,7 @@ func (b *RopeBridge) MoveHead(mov Movement) {
 	}
 }
 
-func (d Day9) SolvePart1(inputFile string) string {
+func (d Day9) SolvePart1(inputFile string, data []string) string {
 
 	//starts in the bottom possition for a 2x2 grid
 	bridge := RopeBridge{
@@ -150,7 +150,7 @@ func (d Day9) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day9) SolvePart2(inputFile string) string {
+func (d Day9) SolvePart2(inputFile string, data []string) string {
 	//starts in the bottom possition for a 2x2 grid
 	bridge := RopeBridge{
 		9,

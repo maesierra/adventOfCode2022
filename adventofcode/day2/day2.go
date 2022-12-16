@@ -38,7 +38,7 @@ var points map[string]map[string]int = map[string]map[string]int{
 	},
 }
 
-func (d Day2) SolvePart1(inputFile string) string {
+func (d Day2) SolvePart1(inputFile string, data []string) string {
 	
 	input := strings.Split(common.ReadFile(inputFile), "\n")
 	var score int = 0
@@ -53,7 +53,7 @@ func (d Day2) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day2) SolvePart2(inputFile string) string {
+func (d Day2) SolvePart2(inputFile string, data []string) string {
 	input := strings.Split(common.ReadFile(inputFile), "\n")
 	strategy := map[string]map[string]string{
         "Rock": map[string]string{

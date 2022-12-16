@@ -34,11 +34,11 @@ func (Day6) detectPattern(inputFile string, size int) string {
 
 
 
-func (d Day6) SolvePart1(inputFile string) string {	
+func (d Day6) SolvePart1(inputFile string, data []string) string {	
 	return d.detectPattern(inputFile, 4)
 
 }
 
-func (d Day6) SolvePart2(inputFile string) string {
+func (d Day6) SolvePart2(inputFile string, data []string) string {
 	return d.detectPattern(inputFile, 14)
 }

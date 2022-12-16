@@ -112,7 +112,7 @@ func (Day7) createFilesystem(inputFile string) Directory {
 	return root
 }
 
-func (d Day7) SolvePart1(inputFile string) string {		
+func (d Day7) SolvePart1(inputFile string, data []string) string {		
 	root := d.createFilesystem(inputFile)
 	fmt.Printf("%v\n", root)
 	total := root.FilteredDirectoriesSize(100000)
@@ -121,7 +121,7 @@ func (d Day7) SolvePart1(inputFile string) string {
 }
 
 
-func (d Day7) SolvePart2(inputFile string) string {
+func (d Day7) SolvePart2(inputFile string, data []string) string {
 	root := d.createFilesystem(inputFile)	
 	diskSize := 70000000
 	unUsed := diskSize - root.Size()

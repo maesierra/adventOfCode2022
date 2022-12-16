@@ -97,7 +97,7 @@ func (d Day12) CreateHeightMap(inputFile string) HeightMap {
 	return HeightMap{heightMap: heightMap, start: start, end: end, lowerPoints: lowerPoints}
 }
 
-func (d Day12) SolvePart1(inputFile string) string {
+func (d Day12) SolvePart1(inputFile string, data []string) string {
 	
 	heightMap := d.CreateHeightMap(inputFile)
 	path, cost, _ := heightMap.Path(heightMap.start, heightMap.end)
@@ -106,7 +106,7 @@ func (d Day12) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day12) SolvePart2(inputFile string) string {
+func (d Day12) SolvePart2(inputFile string, data []string) string {
 	heightMap := d.CreateHeightMap(inputFile)
 	minCost := math.MaxInt
 	for i, pos := range heightMap.lowerPoints {

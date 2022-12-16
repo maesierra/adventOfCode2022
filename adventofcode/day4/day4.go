@@ -12,7 +12,7 @@ import (
 type Day4 struct {
 }
 
-func (d Day4) SolvePart1(inputFile string) string {
+func (d Day4) SolvePart1(inputFile string, data []string) string {
 	
 	input := strings.Split(common.ReadFile(inputFile), "\n")
 	var total int = 0
@@ -29,7 +29,7 @@ func (d Day4) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day4) SolvePart2(inputFile string) string {
+func (d Day4) SolvePart2(inputFile string, data []string) string {
 	input := strings.Split(common.ReadFile(inputFile), "\n")
 	var total int = 0
 	for _, assignment := range input {

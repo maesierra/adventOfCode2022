@@ -8,3 +8,10 @@ func Reverse[A any](s []A) []A {
 
 	return items
 }
+
+func Remove[A any](s []A, i int, zero A) []A{
+	s[i] = s[len(s)-1] // Copy last element to index i.
+	s[len(s)-1] = zero   // Erase last element (write zero value).
+	s = s[:len(s)-1]   // Truncate slice.
+	return s
+}

@@ -11,7 +11,7 @@ import (
 type Day1 struct {
 }
 
-func (d Day1) SolvePart1(inputFile string) string {
+func (d Day1) SolvePart1(inputFile string, data []string) string {
 	input := strings.Split(common.ReadFile(inputFile), "\n\n")
 	var max int64 = 0
 	for _, perElf := range input {
@@ -24,7 +24,7 @@ func (d Day1) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day1) SolvePart2(inputFile string) string {
+func (d Day1) SolvePart2(inputFile string, data []string) string {
 	input := strings.Split(common.ReadFile(inputFile), "\n\n")
 	top := &common.MaxIntHeap{0, 0, 0}
 	heap.Init(top)

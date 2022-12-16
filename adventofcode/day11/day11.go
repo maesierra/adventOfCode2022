@@ -122,13 +122,13 @@ func (d Day11) run(monkeys []Monkey, nRounds int, worryAdjustment func (v int) i
 	return monkeyBusiness
 }
 
-func (d Day11) SolvePart1(inputFile string) string {	
+func (d Day11) SolvePart1(inputFile string, data []string) string {	
 	monkeys := d.Parse(inputFile)
 	monkeyBusiness := d.run(monkeys, 20, func(v int) int {return v / 3})
 	return strconv.Itoa(monkeyBusiness)
 }
 
-func (d Day11) SolvePart2(inputFile string) string {
+func (d Day11) SolvePart2(inputFile string, data []string) string {
 	monkeys := d.Parse(inputFile)
 	magicProduct := 1
 	for _, monkey := range monkeys {

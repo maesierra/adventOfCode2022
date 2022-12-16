@@ -20,6 +20,10 @@ func (r1 Range) Contains(r2 Range) bool {
 	return r2.lower >= r1.lower && r2.upper <= r1.upper
 }
 
+func (r Range) ContainsValue(value int) bool {
+	return value >= r.lower && value <= r.upper
+}
+
 func (r1 Range) Intersection(r2 Range) *Range {
 	var min, max Range
 	if r1.upper < r2.lower {
@@ -45,10 +49,37 @@ func (r1 Range) Intersection(r2 Range) *Range {
     return &Range{max.lower , upper}
 }
 
+func (r1 Range) Union(r2 Range) []Range {
+	if r1.Contains(r2){
+		return []Range{r1}		
+	}  else if r2.Contains(r1) {
+		return []Range{r2}		
+	} else if r1.ContainsValue(r2.lower) && !r1.ContainsValue(r2.upper){
+		return []Range{{r1.lower, r2.upper}}		
+	} else if r1.ContainsValue(r2.upper) && !r1.ContainsValue(r2.lower){
+		return []Range{{r2.lower, r1.upper}}		
+	} else if r2.ContainsValue(r1.lower) && !r2.ContainsValue(r1.upper){
+		return []Range{{r2.lower, r1.upper}}		
+	} else if r2.ContainsValue(r1.upper) && !r2.ContainsValue(r1.lower){
+		return []Range{{r1.lower, r2.upper}}		
+	} else {
+		return []Range{r1, r2}
+	}
+}
+
+func (r Range) Size() int {
+	return r.upper - r.lower + 1
+}
+
 func (r Range) String() string {
 	return fmt.Sprintf("%v", r.Unpack())
 }
 
 func NewRange(lower, upper int) Range {
-	return Range{lower, upper}
+	if lower > upper {
+		return Range{upper, lower}
+	} else {
+		return Range{lower, upper}
+	}
+	
 }

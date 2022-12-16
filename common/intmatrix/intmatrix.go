@@ -23,26 +23,34 @@ func ReadFileIntoMatrix(path string) *mat.Dense {
 	return mat.NewDense(rows, columns, data)
 }
 
-func AddColumnToTheLeft(m *mat.Dense) *mat.Dense {
+func AddColumnToTheLeft(n int, m *mat.Dense) *mat.Dense {
 	newData := []float64{}
+	filled := []float64{}
+	for i := 0; i < n; i++ {
+		filled = append(filled, 0)
+	}
 	for r := 0; r < m.RawMatrix().Rows; r++ {
-		newData = append(newData, 0)
+		newData = append(newData, filled...)
 		for c := 0; c < m.RawMatrix().Cols; c++ {
 			newData = append(newData, m.At(r, c))
 		}
 	}
-	return mat.NewDense(m.RawMatrix().Rows, m.RawMatrix().Cols+1, newData)
+	return mat.NewDense(m.RawMatrix().Rows, m.RawMatrix().Cols + n, newData)
 }
 
-func AddColumnToTheRight(m *mat.Dense) *mat.Dense {
-	return mat.DenseCopyOf(m.Grow(0, 1))
+func AddColumnToTheRight(n int, m *mat.Dense) *mat.Dense {
+	return mat.DenseCopyOf(m.Grow(0, n))
 }
 
-func AddRowToTheBottom(m *mat.Dense) *mat.Dense {
-	return mat.DenseCopyOf(m.Grow(1, 0))
+func AddRowToTheBottom(n int, m *mat.Dense) *mat.Dense {
+	return mat.DenseCopyOf(m.Grow(n, 0))
 }
 
-func AddRowToTheTop(m *mat.Dense) *mat.Dense {
+func AddRowToTheTop(n int, m *mat.Dense) *mat.Dense {
 	newRow := make([]float64, m.RawMatrix().Cols)
-	return mat.NewDense(m.RawMatrix().Rows+1, m.RawMatrix().Cols, append(newRow, m.RawMatrix().Data...))
+	data := m.RawMatrix().Data
+	for i := 0; i < n; i++ {
+		data = append(newRow, data...)
+	}
+	return mat.NewDense(m.RawMatrix().Rows + n, m.RawMatrix().Cols, data)
 }

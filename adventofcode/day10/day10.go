@@ -41,7 +41,7 @@ func (op Op) String() string {
 }
 
 
-func (d Day10) SolvePart1(inputFile string) string {
+func (d Day10) SolvePart1(inputFile string, data []string) string {
 	
 	ops := d.Parse(inputFile)
 	controlCycles := map[int]bool{		
@@ -118,7 +118,7 @@ func (s Screen) String() string {
 }
 
 
-func (d Day10) SolvePart2(inputFile string) string {
+func (d Day10) SolvePart2(inputFile string, data []string) string {
 	ops := d.Parse(inputFile)
 	screen := Screen{[]string{"","","","","","",}, 1, 40}
 	running := common.Stack[Op]{}

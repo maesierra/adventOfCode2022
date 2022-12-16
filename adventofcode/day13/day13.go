@@ -149,7 +149,7 @@ func (d Day13) Parse(line string) Packet {
 	panic("Malformed list")
 }
 
-func (d Day13) SolvePart1(inputFile string) string {
+func (d Day13) SolvePart1(inputFile string, data []string) string {
 	
 	input := common.ReadFileIntoLBlocks(inputFile, "\n\n")	
 	sum := 0
@@ -169,7 +169,7 @@ func (d Day13) SolvePart1(inputFile string) string {
 
 }
 
-func (d Day13) SolvePart2(inputFile string) string {
+func (d Day13) SolvePart2(inputFile string, data []string) string {
 	input := common.ReadFileIntoLBlocks(inputFile, "\n\n")	
 	divider1 := d.Parse("[[2]]")
 	divider2 := d.Parse("[[6]]")
