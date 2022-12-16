@@ -16,6 +16,14 @@ func (r Range) Unpack() []int {
 	return a
 }
 
+func (r Range) Lower() int {
+	return r.lower
+}
+
+func (r Range) Upper() int {
+	return r.upper
+}
+
 func (r1 Range) Contains(r2 Range) bool {
 	return r2.lower >= r1.lower && r2.upper <= r1.upper
 }

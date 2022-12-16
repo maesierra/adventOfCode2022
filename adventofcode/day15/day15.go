@@ -54,6 +54,20 @@ func (g Grid) add(aMap map[int]map[int]bool, p common.Point) {
 	}
 }
 
+func (g Grid) check(aMap map[int]map[int]bool, p common.Point) bool{
+	_, hasY := aMap[p.Y]
+	if hasY {
+		_, hasX := aMap[p.Y][p.X]
+		return hasX
+	} else {
+		return false
+	}
+}
+
+func (g Grid) CheckPoint(p common.Point) bool {
+	return g.check(g.sensorPoints, p) || g.check(g.beaconPoints, p)
+}
+
 
 func (g * Grid) InArea(y int, sensor Sensor) (common.Range, bool) {
 	distance := sensor.Distance()
@@ -157,14 +171,34 @@ func (d Day15) SolvePart2(inputFile string, data []string) string {
 	}
 	var res string = ""
 	for i := 0; i <= maxY; i++ {
-		if i % 100 == 0 {
+		if i % 100 == 0 || debug {
 			fmt.Printf("%d\n", i)
 		}
 		ranges := grid.InLine(i)	
-		if len(ranges) == 2 {
-			//fmt.Printf("%d %v %v\n", i, ranges[0], ranges[1])
-			fmt.Printf("found something at %d\n", i)
-			res = "found"
+		len := len(ranges)
+		if len == 2 {
+			var lower common.Range
+			var upper common.Range
+			if ranges[0].Lower() < ranges[1].Lower() {
+				lower = ranges[0]
+				upper = ranges[1]
+			} else {
+				lower = ranges[1]
+				upper = ranges[0]
+			}
+			if upper.Lower() - lower.Upper() > 2 {
+				//It has to have just one point
+				continue
+			}
+			point := common.Point{X: lower.Upper() + 1, Y: i}
+			if !grid.CheckPoint(point) {
+				tunningFrequency := (4000000 * point.X) + point.Y
+				res = strconv.Itoa(tunningFrequency)
+				break
+			}
+						
+		} else if len > 2 {
+			fmt.Printf("Range with more than 1 space %d\n", i)
 		}
 	}	
 	return res
