@@ -59,3 +59,39 @@ func (l Line) Draw() []Point {
 	panic("line not straight")
 }
 
+type BoundingBox struct {
+	X1 int
+	Y1 int
+	X2 int
+	Y2 int
+}
+
+func (b BoundingBox) Width() int {
+	return IntAbs(b.X2 - b.X1) + 1
+}
+
+func (b BoundingBox) Height() int {
+	return IntAbs(b.Y2 - b.Y1) + 1
+}
+
+func (b BoundingBox) Contains(x, y int) bool {
+	return b.X1 <= x && b.X2 >= x && b.Y1 <= y && b.Y2 >= y
+}
+
+func (b BoundingBox) Move(x, y int) BoundingBox {
+	return BoundingBox{
+		X1: b.X1 + x, 
+		Y1: b.Y1 + y, 
+		X2: b.X2 + x, 
+		Y2: b.Y2 + y,
+	}
+}
+
+func (r1 BoundingBox) Intersects(r2 BoundingBox) bool {
+	return !(r2.X1 > r1.X2 || r2.X2 < r1.X1 || r2.Y2 < r1.Y1 || r2.Y1 > r1.Y2);
+	
+}
+
+func NewBoundingBox(x, y, height, width int) BoundingBox {
+	return BoundingBox{X1: x, Y1: y, X2: x + width, Y2: y + height}
+}

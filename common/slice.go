@@ -15,3 +15,12 @@ func Remove[A any](s []A, i int, zero A) []A{
 	s = s[:len(s)-1]   // Truncate slice.
 	return s
 }
+
+
+func CopyMap[K , V comparable](m map[K]V) map[K]V{
+    result := make(map[K]V)
+    for k, v := range m {
+        result[k] = v
+    }
+    return result
+}
