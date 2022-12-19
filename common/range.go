@@ -20,6 +20,14 @@ func (r Range) Lower() int {
 	return r.lower
 }
 
+func (r * Range) Extend(value int) {
+	if value < r.lower {
+		r.lower = value
+	} else if value > r.upper {
+		r.upper = value
+	}
+}
+
 func (r Range) Upper() int {
 	return r.upper
 }
