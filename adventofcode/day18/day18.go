@@ -240,12 +240,13 @@ func (d Day18) SolvePart2(inputFile string, data []string) string {
 			}
 		}
 	}
-	for _, c := range empty {
-		fmt.Printf("newEmpty(%v,%v,%d)\n", c.x, c.y, c.z)
-	}
-	for _, c := range cubes {
-		fmt.Printf("newBox(%v,%v,%d)\n", c.x, c.y, c.z)
-	}
+	// To produce the babylonjs visualization
+	// for _, c := range empty {
+	// 	fmt.Printf("newEmpty(%v,%v,%d)\n", c.x, c.y, c.z)
+	// }
+	// for _, c := range cubes {
+	// 	fmt.Printf("newBox(%v,%v,%d)\n", c.x, c.y, c.z)
+	// }
 	
 	return strconv.Itoa(total)
 }
