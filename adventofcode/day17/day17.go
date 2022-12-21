@@ -27,13 +27,15 @@ type Chamber struct {
 	points map[int]map[int]bool
 	maxBlockLeft Block
 	maxBlockRight Block
+	minHeight int
+	maxHeight int
 }
 
 func (c *Chamber) AddRock() *Rock{
 	c.lastShape = (c.lastShape + 1) % 5
 	c.totalRocks++
 	rock := Rock{n: c.totalRocks, shape: c.lastShape, placed: false}
-	rock.Place(c.MaxHeight() + 4, c.width)
+	rock.Place(c.maxHeight + 4, c.width)
 	c.rocks[rock.n] = &rock
 	return &rock
 }
@@ -107,11 +109,33 @@ func (c *Chamber) move(rock *Rock, x, y int) bool{
 	return true
 }
 
+func (c Chamber) Encode(r *Rock, position int) string {
+	str := fmt.Sprintf("%v-%v-", r.shape, position)
+	max := c.maxHeight
+	min := c.minHeight
+	for y := min; y < max; y++ {
+		block := 0
+		for x := 0; x < c.width; x++ {
+			if _, present := c.points[y][x] ; present {
+				str += "."
+			} else {
+				str += " "
+			}
+			
+		}
+		if block != 0 {
+			str += strconv.Itoa(block)
+		}
+		str += "|"
+	}
+	return str
+}
+
 
 func (c Chamber) String() string {
 	str := ""
-	max := c.MaxHeight()
-	min := c.MinHeight()
+	max := c.maxHeight
+	min := c.minHeight
 	for y := max; y >= min; y-- {
 		str += fmt.Sprintf("% 6d |", y)
 		for x := 0; x < c.width; x++ {
@@ -398,27 +422,29 @@ func (d Day17) RunSimulation(movements string, nRocks uint64) int {
 		rocks: map[int]*Rock{}, 
 		perLine: map[int]map[int]*Rock{},
 		points: map[int]map[int]bool{},
+		maxHeight: -1,
 		totalRocks: 0,
 	}
+	cache := map[string]int{}
 	var i uint64 
+	nMovements := len(movements)
+	cycleStarted := ""
+	cycle :=[]int{}
 	for i = 0; i < nRocks; i++ {		
 		rock := c.AddRock();
 		if debugLevel > 0 {
-			fmt.Printf("Adding rock %d min: %d max: %d nRocks: %d\n", i + 1, c.MinHeight(), c.MaxHeight(), len(c.rocks))
+			fmt.Printf("Adding rock %d min: %d max: %d nRocks: %d\n", i + 1, c.minHeight, c.maxHeight, len(c.rocks))
 		} else if debugLevel ==0 && i % 1000000 ==0 {
 			fmt.Printf("Adding rock %d nRocks: %d\n", i + 1, len(c.rocks))
 		}
 		for ; !rock.placed ;  {
-			if pos == len(movements) {
-				pos = 0		
-			}
 			if movements[pos] == '<' {
 				c.MoveLeft(rock)
 			} else {
 				c.MoveRight(rock)
 			}
 			c.MoveDown(rock)
-			pos++
+			pos = (pos + 1) % nMovements
 		}
 		for _, p := range rock.At(rock.box) {
 			_, present := c.points[p.Y] 
@@ -436,13 +462,30 @@ func (d Day17) RunSimulation(movements string, nRocks uint64) int {
 				c.perLine[y][rock.n] = rock
 			}
 		}
+		c.minHeight = c.MinHeight()
+		c.maxHeight = c.MaxHeight()
+		key := c.Encode(rock, pos)
+		if cached, present := cache[key]; present {
+			if cycleStarted == "" {
+				cycleStarted = key
+				fmt.Printf("Cache hit after %d %v %v %v\n", i, c.maxHeight, cached, c.maxHeight - cached)
+				cycle = append(cycle, c.maxHeight)
+			} else if cycleStarted == key {
+				linesPerCycle := cycle[len(cycle) - 1] - cycle[0]
+				nTimes := nRocks / uint64(len(cycle))
+				fmt.Printf("%d %v other %v\n", linesPerCycle, len(cycle), c.maxHeight - cycle[1])
+				total := nTimes * uint64(linesPerCycle) + uint64(cycle[int(nRocks % uint64(len(cycle)))] - cycle[0])
+				return int(total)
+			}  else {
+				cycle = append(cycle, c.maxHeight)
+			}
+		} else {
+			cache[key] = c.maxHeight
+		}
 		if debugLevel > 3 {
 			fmt.Printf("%v", c)
 		}
 		c.Prune(rock)
-		
-		
-
 	}	
 	if debugLevel > 2 {
 		fmt.Printf("%v", c)
