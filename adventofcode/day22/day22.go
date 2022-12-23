@@ -149,7 +149,7 @@ func (b *Board) Move(m Movement) {
 		}
 		prev = tile
 		if rotation != "" {
-			b.Direction = rotations[m.Rotation][b.Direction]
+			b.Direction = rotations[rotation][b.Direction]
 		}
 		b.trail =append(b.trail, Trail{
 			position: common.Point{X: tile.column, Y: tile.row},
@@ -171,42 +171,44 @@ type Movement struct {
 }
 
 
+type Connection struct {
+	face  int
+	vertex string
+	rotation string
+}
 
 type Face struct {
 	id int
 	row int
 	column int 
-	top int
-	topRotation string
-	left int
-	leftRotation string
-	right int
-	rightRotation string
-	bottom int
-	bottomRotation string
+	top Connection
+	left Connection
+	right Connection
+	bottom Connection
 }
+
 var Maps2d = map[int]Map {
 	1: {
 		id: 1,
 		faces: [6]Face{
-			{id: 1, row: 0, column: 2, top: 5, left: 1, right: 1, bottom: 4},
-			{id: 2, row: 1, column: 0, top: 2, left: 4, right: 3, bottom: 2},
-			{id: 3, row: 1, column: 1, top: 3, left: 2, right: 4, bottom: 2},
-			{id: 4, row: 1, column: 2, top: 1, left: 3, right: 2, bottom: 5},
-			{id: 5, row: 2, column: 2, top: 4, left: 6, right: 6, bottom: 1},
-			{id: 6, row: 2, column: 3, top: 6, left: 5, right: 5, bottom: 6},
+			{id: 1, row: 0, column: 2, top: Connection{5, "B", ""}, left: Connection{1, "R", ""}, right: Connection{1, "L", ""}, bottom: Connection{4, "T", ""}},
+			{id: 2, row: 1, column: 0, top: Connection{2, "B", ""}, left: Connection{4, "R", ""}, right: Connection{3, "L", ""}, bottom: Connection{2, "T", ""}},
+			{id: 3, row: 1, column: 1, top: Connection{3, "B", ""}, left: Connection{2, "R", ""}, right: Connection{4, "L", ""}, bottom: Connection{2, "T", ""}},
+			{id: 4, row: 1, column: 2, top: Connection{1, "B", ""}, left: Connection{3, "R", ""}, right: Connection{2, "L", ""}, bottom: Connection{5, "T", ""}},
+			{id: 5, row: 2, column: 2, top: Connection{4, "B", ""}, left: Connection{6, "R", ""}, right: Connection{6, "L", ""}, bottom: Connection{1, "T", ""}},
+			{id: 6, row: 2, column: 3, top: Connection{6, "B", ""}, left: Connection{5, "R", ""}, right: Connection{5, "L", ""}, bottom: Connection{6, "T", ""}},
 		},
 		dimensions: [2]int{3, 4},
 	}, 
 	2: {
 		id: 2,
 		faces: [6]Face{
-			{id: 1, row: 0, column: 1, top: 5, left: 6, right: 6, bottom: 4},
-			{id: 6, row: 0, column: 2, top: 6, left: 1, right: 1, bottom: 6},
-			{id: 4, row: 1, column: 1, top: 1, left: 4, right: 4, bottom: 5},
-			{id: 3, row: 2, column: 0, top: 2, left: 5, right: 5, bottom: 2},
-			{id: 5, row: 2, column: 1, top: 4, left: 3, right: 3, bottom: 1},
-			{id: 2, row: 3, column: 0, top: 3, left: 2, right: 2, bottom: 3},
+			{id: 1, row: 0, column: 1, top: Connection{5, "B", ""}, left: Connection{6, "R", ""}, right: Connection{6, "L", ""}, bottom: Connection{4, "T", ""}},
+			{id: 6, row: 0, column: 2, top: Connection{6, "B", ""}, left: Connection{1, "R", ""}, right: Connection{1, "L", ""}, bottom: Connection{6, "T", ""}},
+			{id: 4, row: 1, column: 1, top: Connection{1, "B", ""}, left: Connection{4, "R", ""}, right: Connection{4, "L", ""}, bottom: Connection{5, "T", ""}},
+			{id: 3, row: 2, column: 0, top: Connection{2, "B", ""}, left: Connection{5, "R", ""}, right: Connection{5, "L", ""}, bottom: Connection{2, "T", ""}},
+			{id: 5, row: 2, column: 1, top: Connection{4, "B", ""}, left: Connection{3, "R", ""}, right: Connection{3, "L", ""}, bottom: Connection{1, "T", ""}},
+			{id: 2, row: 3, column: 0, top: Connection{3, "B", ""}, left: Connection{2, "R", ""}, right: Connection{2, "L", ""}, bottom: Connection{3, "T", ""}},
 		},
 		dimensions: [2]int{4, 3},
 	},
@@ -217,24 +219,25 @@ var Maps3d = map[int]Map {
 	1: {
 		id: 1,
 		faces: [6]Face{
-			{id: 1, row: 0, column: 2, top: 2, topRotation: "O", left: 3, leftRotation: "L", right: 6, rightRotation: "O", bottom: 4, bottomRotation: "" },
-			{id: 2, row: 1, column: 0, top: 1, topRotation: "O", left: 6, leftRotation: "L", right: 3, rightRotation: "",  bottom: 5, bottomRotation: "O"},
-			{id: 3, row: 1, column: 1, top: 1, topRotation: "R", left: 2, leftRotation: "",  right: 4, rightRotation: "",  bottom: 5, bottomRotation: "L"},
-			{id: 4, row: 1, column: 2, top: 1, topRotation: "",  left: 3, leftRotation: "",  right: 6, rightRotation: "R", bottom: 5, bottomRotation: "" },
-			{id: 5, row: 2, column: 2, top: 4, topRotation: "",  left: 3, leftRotation: "R", right: 6, rightRotation: "",  bottom: 2, bottomRotation: "O"},
-			{id: 6, row: 2, column: 3, top: 6, topRotation: "L", left: 5, leftRotation: "",  right: 1, rightRotation: "O", bottom: 2, bottomRotation: "R"},
+			{id: 1, row: 0, column: 2, top: Connection{2, "T", "O"}, left: Connection{3, "T", "L"}, right: Connection{6, "R", "O"}, bottom: Connection{4, "T", "" }},
+			{id: 2, row: 1, column: 0, top: Connection{1, "T", "O"}, left: Connection{6, "B", "R"}, right: Connection{3, "L", "" }, bottom: Connection{5, "B", "O"}},
+			{id: 3, row: 1, column: 1, top: Connection{1, "L", "R"}, left: Connection{2, "R", "" }, right: Connection{4, "L", "" }, bottom: Connection{5, "L", "L"}},
+			{id: 4, row: 1, column: 2, top: Connection{1, "B", "" }, left: Connection{3, "R", "" }, right: Connection{6, "T", "R"}, bottom: Connection{5, "T", "" }},
+			{id: 5, row: 2, column: 2, top: Connection{4, "B", "" }, left: Connection{3, "B", "R"}, right: Connection{6, "L", "" }, bottom: Connection{2, "B", "O"}},
+			{id: 6, row: 2, column: 3, top: Connection{6, "R", "L"}, left: Connection{5, "R", "" }, right: Connection{1, "R", "O"}, bottom: Connection{2, "L", "L"}},
 		},
 		dimensions: [2]int{3, 4},
 	}, 
 	2: {
 		id: 2,
 		faces: [6]Face{
-			{id: 1, row: 0, column: 1, top: 2, left: 3, right: 6, bottom: 4},
-			{id: 6, row: 0, column: 2, top: 6, left: 5, right: 1, bottom: 2},
-			{id: 4, row: 1, column: 1, top: 4, left: 3, right: 6, bottom: 2},
-			{id: 5, row: 2, column: 1, top: 1, left: 3, right: 6, bottom: 5},
-			{id: 3, row: 2, column: 0, top: 1, left: 2, right: 4, bottom: 5},
-			{id: 2, row: 3, column: 0, top: 1, left: 6, right: 3, bottom: 5},
+			{id: 1, row: 0, column: 1, top: Connection{2, "L", "R"}, left: Connection{3, "L", "O"}, right: Connection{6, "L", "" }, bottom: Connection{4, "T", "" }},
+			{id: 2, row: 3, column: 0, top: Connection{3, "B", "" }, left: Connection{1, "T", "L"}, right: Connection{5, "B", "L"}, bottom: Connection{6, "T", ""}},
+			{id: 3, row: 2, column: 0, top: Connection{4, "L", "R"}, left: Connection{1, "L", "O"}, right: Connection{5, "L", "" }, bottom: Connection{2, "T", "" }},
+			{id: 4, row: 1, column: 1, top: Connection{1, "B", "" }, left: Connection{3, "T", "L"}, right: Connection{6, "B", "L"}, bottom: Connection{5, "T", "" }},
+			{id: 5, row: 2, column: 1, top: Connection{4, "B", "" }, left: Connection{3, "R", "" }, right: Connection{6, "R", "O"}, bottom: Connection{2, "R", "R"}},
+			{id: 6, row: 0, column: 2, top: Connection{2, "B", "" }, left: Connection{1, "R", "" }, right: Connection{5, "R", "O"}, bottom: Connection{4, "R", "R"}},
+
 		},
 		dimensions: [2]int{4, 3},
 	},
@@ -257,97 +260,174 @@ func (m Map) FaceWidth() int {
 	return m.columns / m.dimensions[1]
 }
 
-func (m Map) GetFace(row, column int) *Face  {
-	faceRow := row / m.FaceHeight()
-	faceColumn := column / m.FaceWidth()
-	for _, f:= range m.faces {
-		if f.row == faceRow && f.column == faceColumn {
-			return &f
-		} 
+
+func (m Map) GetFace(id int) Face {
+	for _, f := range m.faces {
+		if f.id == id {
+			return f
+		}
 	}
-	return nil
+	panic("no face")
 }
 
-func (m Map) ConnectTop(face Face, column int) (*Face, common.Point) {
-	for _, otherFace := range m.faces {
-		if otherFace.id == face.top {
-			for _, p := range m.GetBottomBorder(otherFace) {
-				if p.X == column {
-					return &otherFace, p
-				}
-			}
+func (m Map) ConnectTop(face Face, column int) common.Point {
+	delta := column - face.column * m.FaceWidth() 
+	transpose := false
+	otherFace := m.GetFace(face.top.face)
+	switch face.top.vertex {
+	case "T": 
+		column = (otherFace.column + 1) * m.FaceWidth() - 1 - delta
+	case "L":
+		transpose = true
+		column = otherFace.row  * m.FaceHeight() +  delta		
+	case "R": 
+		transpose = true
+		column = (otherFace.row + 1) * m.FaceHeight() - 1 - delta		
+	case "B": 
+		column = otherFace.column  * m.FaceWidth() +  delta		
+	}
+	for _, p := range m.GetVertex(otherFace, face.top.vertex) {
+		if !transpose && p.X == column {
+			return p
+		} else if transpose && p.Y == column {
+			return p
 		}
 	}
 	panic("no connect top")
 }
 
-func (m Map) ConnectBottom(face Face, column int) (*Face, common.Point) {
-	for _, otherFace := range m.faces {
-		if otherFace.id == face.bottom {
-			for _, p := range m.GetTopBorder(otherFace) {
-				if p.X == column {
-					return &otherFace, p
-				}
-			}
+func (m Map) ConnectBottom(face Face, column int) common.Point {
+	delta := column - face.column * m.FaceWidth() 
+	transpose := false
+	otherFace := m.GetFace(face.bottom.face)
+	switch face.bottom.vertex {
+	case "B": 
+		column = (otherFace.column + 1) * m.FaceWidth() - 1 - delta
+	case "L":
+		transpose = true
+		column = (otherFace.row + 1) * m.FaceHeight() - 1 - delta		
+	case "R": 
+		transpose = true
+		column = otherFace.row  * m.FaceHeight() +  delta		
+	case "T": 
+		column = otherFace.column  * m.FaceWidth() +  delta		
+	}
+	for _, p := range m.GetVertex(otherFace, face.bottom.vertex) {
+		if !transpose && p.X == column {
+			return p
+		} else if transpose && p.Y == column {
+			return p
 		}
 	}
 	panic("no connect bottom")
 }
 
-func (m Map) ConnectLeft(face Face, row int) (*Face, common.Point) {
-	for _, otherFace := range m.faces {
-		if otherFace.id == face.left {
-			for _, p := range m.GetRightBorder(otherFace) {
-				if p.Y == row {
-					return &otherFace, p
-				}
-			}
+func (m Map) ConnectLeft(face Face, row int) common.Point {
+	delta := row - face.row * m.FaceHeight() 
+	transpose := false
+	otherFace := m.GetFace(face.left.face)
+	switch face.left.vertex {
+	case "B": 
+		transpose = true
+		row = (otherFace.column + 1) * m.FaceWidth() - 1 - delta
+	case "L":
+		row = (otherFace.row + 1) * m.FaceHeight() - 1 - delta		
+	case "R": 
+		row = otherFace.row * m.FaceHeight() + delta
+	case "T": 
+		transpose = true
+		row = otherFace.column * m.FaceHeight() + delta
+	}
+	for _, p := range m.GetVertex(otherFace, face.left.vertex) {
+		if !transpose && p.Y == row {
+			return p
+		} else if transpose && p.X == row {
+			return p
 		}
 	}
 	panic("no connect left")
 }
 
-func (m Map) ConnectRight(face Face, row int) (*Face, common.Point) {
-	for _, otherFace := range m.faces {
-		if otherFace.id == face.right {
-			for _, p := range m.GetLeftBorder(otherFace) {
-				if p.Y == row {
-					return &otherFace, p
-				}
-			}
+func (m Map) ConnectRight(face Face, row int) common.Point {
+	delta := row - face.row * m.FaceHeight() 
+	transpose := false
+	otherFace := m.GetFace(face.right.face)
+	switch face.right.vertex {
+	case "B": 
+		transpose = true
+		row = otherFace.column * m.FaceWidth() + delta
+	case "L":
+		row = otherFace.row * m.FaceHeight() + delta
+	case "R": 
+		row = (otherFace.row + 1) * m.FaceHeight() - 1 - delta		
+	case "T": 
+		transpose = true
+		row = (otherFace.column + 1) * m.FaceWidth() - 1 - delta
+	}
+	for _, p := range m.GetVertex(otherFace, face.right.vertex) {
+		if !transpose && p.Y == row {
+			return p
+		} else if transpose && p.X == row {
+			return p
 		}
 	}
-	panic("no connect left")
+	panic("no connect right")
+}
+
+func (m Map) GetVertex(face Face, vertex string) []common.Point {
+	switch vertex {
+	case "B":
+		return m.GetBottomBorder(face)
+	case "T":
+		return m.GetTopBorder(face)
+	case "R":
+		return m.GetRightBorder(face)
+	case "L":
+		return m.GetLeftBorder(face)
+	}
+	panic("unknown vertex")
 }
 
 func (m Map) GetTopBorder(face Face) []common.Point {
 	res := []common.Point{}
-	for column := face.column * m.FaceWidth(); column < (face.column + 1) * m.FaceWidth(); column++ {
-		res = append(res, common.Point{X: column, Y: face.row * m.FaceHeight()})
+	from := face.column * m.FaceWidth()
+	to := (face.column + 1) * m.FaceWidth()
+	y := face.row * m.FaceHeight()
+	for column := from; column < to; column++ {
+		res = append(res, common.Point{X: column, Y: y})
 	}
 	return res
 }
 
 func (m Map) GetBottomBorder(face Face) []common.Point {
 	res := []common.Point{}
-	for column := face.column * m.FaceWidth(); column < (face.column + 1) * m.FaceWidth(); column++ {
-		res = append(res, common.Point{X: column, Y: ((face.row + 1) * m.FaceHeight()) - 1})
+	from := face.column * m.FaceWidth()
+	to := (face.column + 1) * m.FaceWidth()
+	y := ((face.row + 1) * m.FaceHeight()) - 1
+	for column := from; column < to; column++ {
+		res = append(res, common.Point{X: column, Y: y})
 	}
 	return res
 }
 
 func (m Map) GetLeftBorder(face Face) []common.Point {
 	res := []common.Point{}
-	for row := face.row * m.FaceHeight(); row < (face.row + 1) * m.FaceHeight(); row++ {
-		res = append(res, common.Point{X: face.column * m.FaceWidth(), Y: row})
+	from := face.row * m.FaceHeight()
+	to := (face.row + 1) * m.FaceHeight()
+	x := face.column * m.FaceWidth()
+	for row := from; row < to; row++ {
+		res = append(res, common.Point{X: x, Y: row})
 	}
 	return res
 }
 
 func (m Map) GetRightBorder(face Face) []common.Point {
 	res := []common.Point{}
-	for row := face.row * m.FaceHeight(); row < (face.row + 1) * m.FaceHeight(); row++ {
-		res = append(res, common.Point{X: ((face.column + 1) * m.FaceWidth()) - 1, Y: row})
+	from := face.row * m.FaceHeight()
+	to := (face.row + 1) * m.FaceHeight()
+	x := ((face.column + 1) * m.FaceWidth()) - 1
+	for row := from; row < to; row++ {
+		res = append(res, common.Point{X: x, Y: row})
 	}
 	return res
 }
@@ -428,45 +508,37 @@ func (d Day22) ParseInput(inputFile string, m *Map) (Board, []Movement) {
 		for _, p := range m.GetTopBorder(face) {
 			t := board.TileForPoint(p)
 			if t.up == nil {
-				otherFace, otherPoint := m.ConnectTop(face, p.X)
+				otherPoint := m.ConnectTop(face, p.X)
 				other := board.TileForPoint(otherPoint)				
 				t.up = other
-				t.upRotation = face.topRotation
-				other.down = t
-				other.downRotation = otherFace.bottomRotation
+				t.upRotation = face.top.rotation
 			}
 		}
 		for _, p := range m.GetRightBorder(face) {
 			t := board.TileForPoint(p)
 			if t.right == nil {
-				otherFace, otherPoint := m.ConnectRight(face, p.Y)
+				otherPoint := m.ConnectRight(face, p.Y)
 				other := board.TileForPoint(otherPoint)				
 				t.right = other
-				t.rightRotation = face.rightRotation
-				other.left = t
-				other.leftRotation = otherFace.leftRotation
+				t.rightRotation = face.right.rotation
 			}
 		} 
 		for _, p := range m.GetBottomBorder(face) {
 			t := board.TileForPoint(p)
 			if t.down == nil {
-				otherFace, otherPoint := m.ConnectBottom(face, p.X)
+				otherPoint := m.ConnectBottom(face, p.X)
 				other := board.TileForPoint(otherPoint)				
 				t.down = other
-				t.downRotation = face.bottomRotation
-				other.up = t
-				other.upRotation = otherFace.topRotation
+				t.downRotation = face.bottom.rotation
 			}
 		}
 		for _, p := range m.GetLeftBorder(face) {
 			t := board.TileForPoint(p)
 			if t.left == nil {
-				otherFace, otherPoint := m.ConnectLeft(face, p.Y)
+				otherPoint := m.ConnectLeft(face, p.Y)
 				other := board.TileForPoint(otherPoint)				
 				t.left = other
-				t.leftRotation = face.leftRotation
-				other.right = t
-				other.rightRotation = otherFace.rightRotation
+				t.leftRotation = face.left.rotation
 			}
 		}
 	}
