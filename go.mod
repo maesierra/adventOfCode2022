@@ -6,6 +6,7 @@ require (
 	github.com/albertorestifo/dijkstra v0.0.0-20160910063646-aba76f725f72 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/gammazero/deque v0.2.1 // indirect
 	github.com/ghetzel/go-stockutil v1.11.3 // indirect
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
