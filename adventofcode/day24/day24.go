@@ -1,10 +1,11 @@
 package day24
 
 import (
+	"container/heap"
 	"fmt"
+	"math"
 	"strconv"
 
-	"github.com/gammazero/deque"
 	"maesierra.net/advent-of-code/2022/common"
 )
 
@@ -62,6 +63,8 @@ type State struct {
 	m *Map
 	expedition common.Point 
 	direction string
+	index int
+	reverse bool
 }
 
 func (s State) Next(point common.Point, direction string) State {
@@ -70,7 +73,12 @@ func (s State) Next(point common.Point, direction string) State {
 		m : s.m,
 		minutes: s.minutes + 1,
 		direction: direction,
+		reverse: s.reverse,
 	}
+}
+
+func (s State) Key() string {
+	return fmt.Sprintf("%v-%v", s.expedition, s.minutes)
 }
  
 func (s State) String() string {
@@ -162,8 +170,52 @@ func (s State) Movements() map[string]common.Point {
 	
 }
 
+type StateQueue []*State
 
-func (d Day24) ParseInput(inputFile string) State {
+func (sq StateQueue) Len() int { return len(sq) }
+
+func (sq StateQueue) Less(i, j int) bool {
+	// We want Pop to give us the highest, not lowest, priority so we use greater than here.
+	if sq[i].minutes != sq[j].minutes {
+		return sq[i].minutes > sq[j].minutes
+	}
+	if sq[i].reverse {
+		if sq[i].direction == "<" || sq[i].direction == "^" {
+			return true
+		}
+	} else {
+		if sq[i].direction == ">" || sq[i].direction == "v" {
+			return true
+		}
+	
+	}
+	return false
+}
+
+func (sq StateQueue) Swap(i, j int) {
+	sq[i], sq[j] = sq[j], sq[i]
+	sq[i].index = i
+	sq[j].index = j
+}
+
+func (sq *StateQueue) Push(x any) {
+	n := len(*sq)
+	item := x.(*State)
+	item.index = n
+	*sq = append(*sq, item)
+}
+
+func (sq *StateQueue) Pop() any {
+	old := *sq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil  // avoid memory leak
+	item.index = -1 // for safety
+	*sq = old[0 : n-1]
+	return item
+}
+
+func (d Day24) ParseInput(inputFile string, reverse bool) State {
 	lines := common.ReadFileIntoLines(inputFile)
 	m := Map{
 		rows: len(lines) - 2,
@@ -179,9 +231,17 @@ func (d Day24) ParseInput(inputFile string) State {
 				m.blizzards = append(m.blizzards, Blizzard{pos: common.Point{X: x, Y: y}, direction: string(ch)})
 			case '.': 
 				if row == 0 {
-					m.origin = common.Point{X: x, Y: y}
+					if reverse {
+						m.destination = common.Point{X: x, Y: y}
+					} else {
+						m.origin = common.Point{X: x, Y: y}
+					}
 				} else if row == len(lines) - 1 {
-					m.destination = common.Point{X: x, Y: y}
+					if reverse {
+						m.origin = common.Point{X: x, Y: y}
+					} else {
+						m.destination = common.Point{X: x, Y: y}
+					}
 				}
 			}
 		}
@@ -191,61 +251,84 @@ func (d Day24) ParseInput(inputFile string) State {
 		expedition: m.origin,
 		m: &m,
 		direction: "-",
+		reverse: reverse,
 	}
 }
 
 
-func (d Day24) SolvePart1(inputFile string, data []string) string {
+func (d Day24) CalculateMinPath(initialState State) int {
+	min := math.MaxInt
+	candidates := make(StateQueue, 0)
+	heap.Init(&candidates)
+	heap.Push(&candidates, &initialState)
+	visited := map[string]bool{}
 
-	initialState := d.ParseInput(inputFile)	
-	max := 0
-	candidates := deque.New[State]()
-	candidates.PushFront(initialState)
-	for ; candidates.Len() > 0; {
-		state := candidates.PopFront()
-
+	for candidates.Len() > 0 {
+		state := heap.Pop(&candidates).(*State)
+		visited[state.Key()] = true
 		if logLevel > 1 {
 			fmt.Printf("Minute %v %v\n%v\n", state.minutes, state.direction, state)
 		} else {
 			fmt.Printf("Minute %v pos %v %v [%v]\n", state.minutes, state.expedition, state.direction, candidates.Len())
 		}
-
 		//end state checks
 		if state.Completed() {
-			max = common.IntMax(max, state.minutes)
+			min = common.IntMin(min, state.minutes)
 			if logLevel > 0 {
 				fmt.Printf("Found the exit in %v\n", state.minutes)
 			}
+			//Purge
+			toRemove := []int{}
+			for _, s := range candidates {
+				if s.minutes >= state.minutes {
+					toRemove = append(toRemove, s.index)
+				}
+			}
+			for _, i := range toRemove {
+				heap.Remove(&candidates, i)
+			}
 			continue
 		}
-		if max > 0 && state.minutes >= max {
-			continue //not going to improve
+		if min > 0 && state.minutes >= min {
+			//not going to improve
+			continue
 		}
 
 		options := state.Movements()
 		if len(options) == 0 {
-			fmt.Printf("No options for %v %v \n", state.minutes, state.expedition)
+			if logLevel > 0 {
+				fmt.Printf("No options for %v %v \n", state.minutes, state.expedition)
+			}
 			continue
-		} else {
-			fmt.Printf("Adding %d options for minute %v  pos %v \n", len(options), state.minutes, state.expedition)
 		}
 		for direction, p := range options {
-			//put > and v on the front and "-", "<", "^" on the back
-			switch direction {
-			case ">", "v":
-				candidates.PushFront(state.Next(p, direction))
-			default:
-				candidates.PushBack(state.Next(p, direction))	
+			nextState := state.Next(p, direction)
+			_, present := visited[nextState.Key()]
+			if !present {
+				heap.Push(&candidates, &nextState)
 			}
 		}
-		
-	}
 
-	return strconv.Itoa(max)
+	}
+	return min
+}
+
+func (d Day24) SolvePart1(inputFile string, data []string) string {
+
+	initialState := d.ParseInput(inputFile, false)	
+	
+	return strconv.Itoa(d.CalculateMinPath(initialState))
 
 }
 
+
 func (d Day24) SolvePart2(inputFile string, data []string) string {
-	var score int = 0
-	return strconv.Itoa(int(score))
+	initialStateToExit := d.ParseInput(inputFile, false)
+	initialStateFromExit := d.ParseInput(inputFile, true)
+	toExit := d.CalculateMinPath(initialStateToExit)
+	initialStateFromExit.minutes = toExit
+	fromExit := d.CalculateMinPath(initialStateFromExit)
+	initialStateToExit.minutes = fromExit
+	andBack := d.CalculateMinPath(initialStateToExit)
+	return strconv.Itoa(andBack)
 }
