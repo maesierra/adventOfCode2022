@@ -414,6 +414,11 @@ func (c *Chamber) Prune(rock *Rock) {
 		}
 	}
 }
+type CacheEntry struct {
+	height int
+	n uint64
+}
+
 func (d Day17) RunSimulation(movements string, nRocks uint64) int {
 	pos := 0
 	c := Chamber{
@@ -425,11 +430,11 @@ func (d Day17) RunSimulation(movements string, nRocks uint64) int {
 		maxHeight: -1,
 		totalRocks: 0,
 	}
-	cache := map[string]int{}
+	cache := map[string]CacheEntry{}
 	var i uint64 
 	nMovements := len(movements)
-	cycleStarted := ""
-	cycle :=[]int{}
+	heightIncrease := uint64(0)
+	cycleFound := false
 	for i = 0; i < nRocks; i++ {		
 		rock := c.AddRock();
 		if debugLevel > 0 {
@@ -465,22 +470,16 @@ func (d Day17) RunSimulation(movements string, nRocks uint64) int {
 		c.minHeight = c.MinHeight()
 		c.maxHeight = c.MaxHeight()
 		key := c.Encode(rock, pos)
-		if cached, present := cache[key]; present {
-			if cycleStarted == "" {
-				cycleStarted = key
-				fmt.Printf("Cache hit after %d %v %v %v\n", i, c.maxHeight, cached, c.maxHeight - cached)
-				cycle = append(cycle, c.maxHeight)
-			} else if cycleStarted == key {
-				linesPerCycle := cycle[len(cycle) - 1] - cycle[0]
-				nTimes := nRocks / uint64(len(cycle))
-				fmt.Printf("%d %v other %v\n", linesPerCycle, len(cycle), c.maxHeight - cycle[1])
-				total := nTimes * uint64(linesPerCycle) + uint64(cycle[int(nRocks % uint64(len(cycle)))] - cycle[0])
-				return int(total)
-			}  else {
-				cycle = append(cycle, c.maxHeight)
+		if !cycleFound  {
+			if cached, present := cache[key]; present {
+				cycleSize := i - cached.n
+				amount:= (nRocks - i) / uint64(cycleSize)
+				heightIncrease = amount *  uint64((c.maxHeight - cached.height))
+				i += cycleSize * amount
+				cycleFound = true
+			} else {
+				cache[key] = CacheEntry{height: c.maxHeight, n: i}
 			}
-		} else {
-			cache[key] = c.maxHeight
 		}
 		if debugLevel > 3 {
 			fmt.Printf("%v", c)
@@ -490,7 +489,7 @@ func (d Day17) RunSimulation(movements string, nRocks uint64) int {
 	if debugLevel > 2 {
 		fmt.Printf("%v", c)
 	}
-	return c.MaxHeight() + 1
+	return c.MaxHeight() + 1 + int(heightIncrease)
 }
 
 func (d Day17) SolvePart1(inputFile string, data []string) string {	
